@@ -19,6 +19,7 @@ public:
 	void setDeviceAddress(uint8_t deviceAddress);
 	void setChannel(uint8_t channel);
 	uint8_t getChipVersion(); 
+	uint8_t getStatusByte(); 
 
 private:
 	uint8_t _channel;

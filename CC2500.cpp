@@ -40,7 +40,7 @@ void CC2500::writeRegister(uint8_t addr, uint8_t data) {
 	digitalWrite(SS,HIGH);
 }
 
-void writeRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size) {
+void writeRegisterBurst(uint8_t addr, uint8_t *data, uint8_t size) {
 	digitalWrite(SS,LOW);
 	SPI.transfer(addr);
 	while (size > 0) {
@@ -113,3 +113,11 @@ uint8_t CC2500::getChipVersion() {
 	return readStatusRegister(CC2500_REG_VERSION);
 }
 
+uint8_t CC2500::getStatusByte() {
+	uint8_t recv;
+	
+	digitalWrite(SS,LOW);
+	recv = SPI.transfer(CC2500_CMD_SNOP);
+	digitalWrite(SS,HIGH);
+	return recv;
+}
