@@ -89,3 +89,8 @@
 #define CC2500_CMD_SFTX		0x3B	// Flush the TX FIFO buffer.
 #define CC2500_CMD_SWORRST	0x3C	// Reset real time clock
 #define CC2500_CMD_SNOP		0x3D	// No operation. May be used to get access to the chip status byte.
+
+// multi-byte registers
+#define CC2500_PATABLE		0x3E	// power output table
+#define CC2500_TX_FIFO		0x3F	// transmit FIFO
+#define CC2500_RX_FIFO		0x3F	// receive FIFO
