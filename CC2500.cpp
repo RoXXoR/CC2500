@@ -30,7 +30,8 @@ void CC2500::begin() {
 	digitalWrite(SS,HIGH);
 	pinMode(SS,OUTPUT);
 
-	configureDeviceSettings();
+	resetDevice();
+//	configureDeviceSettings();
 }
 
 void CC2500::writeRegister(uint8_t addr, uint8_t data) {
@@ -40,7 +41,7 @@ void CC2500::writeRegister(uint8_t addr, uint8_t data) {
 	digitalWrite(SS,HIGH);
 }
 
-void writeRegisterBurst(uint8_t addr, uint8_t *data, uint8_t size) {
+void CC2500::writeRegisterBurst(uint8_t addr, uint8_t *data, uint8_t size) {
 	digitalWrite(SS,LOW);
 	SPI.transfer(addr);
 	while (size > 0) {
@@ -58,6 +59,12 @@ uint8_t CC2500::readRegister(uint8_t addr) {
 	recv = SPI.transfer(0x00);
 	digitalWrite(SS,HIGH);
 	return recv;
+}
+
+void CC2500::execStrobeCommand(uint8_t command) {
+	digitalWrite(SS,LOW);
+	SPI.transfer(command);
+	digitalWrite(SS,HIGH);
 }
 
 uint8_t CC2500::readStatusRegister(uint8_t addr) {
@@ -120,4 +127,8 @@ uint8_t CC2500::getStatusByte() {
 	recv = SPI.transfer(CC2500_CMD_SNOP);
 	digitalWrite(SS,HIGH);
 	return recv;
+}
+
+void CC2500::resetDevice() {
+	execStrobeCommand(CC2500_CMD_SRES);
 }

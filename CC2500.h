@@ -29,7 +29,8 @@ private:
 	void writeRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size);
 	uint8_t readRegister(uint8_t addr);
 	uint8_t readStatusRegister(uint8_t addr);
-
+	void execStrobeCommand(uint8_t command);
+	void resetDevice();
 	void configureDeviceSettings();
 
 };
