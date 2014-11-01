@@ -29,7 +29,7 @@
 #define CC2500_MDMCFG2		0x12	// Modem Configuration 2
 #define CC2500_MDMCFG1		0x13	// Modem Configuration 1
 #define CC2500_MDMCFG0		0x14	// Modem Configuration 0
-#define CC2500_DEVIATN		0x15	// Modem Deviation Setting
+#define CC2500_DEVIANT		0x15	// Modem Deviation Setting
 #define CC2500_MCSM2		0x16	// Main Radio Control State Machine Configuration
 #define CC2500_MCSM1		0x17	// Main Radio Control State Machine Configuration
 #define CC2500_MCSM0		0x18	// Main Radio Control State Machine Configuration
