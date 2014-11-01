@@ -40,6 +40,16 @@ void CC2500::writeRegister(uint8_t addr, uint8_t data) {
 	digitalWrite(SS,HIGH);
 }
 
+void writeRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size) {
+	digitalWrite(SS,LOW);
+	SPI.transfer(addr);
+	while (size > 0) {
+		SPI.transfer(*data++);
+		size--;
+	}
+	digitalWrite(SS,HIGH);
+}
+
 uint8_t CC2500::readRegister(uint8_t addr) {
 	uint8_t recv;
 
