@@ -3,6 +3,22 @@
 #include "CC2500.h"
 
 CC2500::CC2500() {
+	CC2500(DEVADDR, CHANNEL);
+}
+C2500::CC2500(uint8_t deviceAddress) {
+	CC2500(deviceAddress, CHANNEL);
+}
+CC2500::CC2500(uint8_t deviceAddress, uint8_t channel) {
+	_deviceAddress = deviceAddress;
+	_channel = channel;	
+}
+
+void CC2500::setDeviceAddress(uint8_t deviceAddress) {
+	_deviceAddress = deviceAddress;
+}
+
+void CC2500::setChannel(uint8_t channel) {
+	_channel = channel;
 }
 
 void CC2500::begin() {
@@ -13,6 +29,8 @@ void CC2500::begin() {
 	
 	digitalWrite(SS,HIGH);
 	pinMode(SS,OUTPUT);
+
+	configureDeviceSettings();
 }
 
 void CC2500::writeRegister(uint8_t addr, uint8_t data) {
@@ -22,14 +40,18 @@ void CC2500::writeRegister(uint8_t addr, uint8_t data) {
 	digitalWrite(SS,HIGH);
 }
 
-uint8_t CC2500::readStatusRegister(uint8_t addr) {
+uint8_t CC2500::readRegister(uint8_t addr) {
 	uint8_t recv;
 
 	digitalWrite(SS,LOW);
-	SPI.transfer(addr|CC2500_READ_BURST);
+	SPI.transfer(addr);
 	recv = SPI.transfer(0x00);
 	digitalWrite(SS,HIGH);
 	return recv;
+}
+
+uint8_t CC2500::readStatusRegister(uint8_t addr) {
+	return readRegister(addr|CC2500_READ_BURST);
 }
 
 void CC2500::configureDeviceSettings() {
@@ -48,19 +70,20 @@ void CC2500::configureDeviceSettings() {
 // Optimization = Sensitivity
 // Sync mode = (3) 30/32 sync word bits detected
 // Format of RX/TX data = (0) Normal mode, use FIFOs for RX and TX
-// CRC operation = (1) CRC calculation in TX and CRC check in RX enabled
 // Forward Error Correction = (0) FEC disabled
-// Length configuration = (1) Variable length packets, packet length configured by the first received byte after sync word.
-// Packetlength = 255
 // Preamble count = (2)  4 bytes
-// Append status = 1
-// Address check = (0) No address check
 // FIFO autoflush = 0
 // Device address = 0
-// GDO0 signal selection = ( 6) Asserts when sync word has been sent / received, and de-asserts at the end of the packet
-// GDO2 signal selection = (11) Serial Clock
-
+	
+	CC2500::writeRegister(CC2500_IOCFG0, 0x06);		// GDO0	= sync word
+	CC2500::writeRegister(CC2500_IOCFG2, 0x0B);		// GDO2 = serial clock
+	CC2500::writeRegister(CC2500_PKTCTRL0, 0x05);		// variable packet length; CRC enabled
+	CC2500::writeRegister(CC2500_PKTCTRL1, 0x05);		// addr. check enabled; status bytes appended
+	CC2500::writeRegister(CC2500_PKTLEN, 0xFF);		// max. packet length
+	CC2500::writeRegister(CC2500_ADDR, _deviceAddress);	// device address
+	CC2500::writeRegister(CC2500_CHANNR, _channel);		// channel number
 }
+
 uint8_t CC2500::getChipVersion() {
-	return CC2500::readStatusRegister(CC2500_REG_VERSION);
+	return readStatusRegister(CC2500_REG_VERSION);
 }
