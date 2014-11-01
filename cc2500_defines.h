@@ -75,4 +75,17 @@
 #define CC2500_RCCTRL1_STATUS	0x3C	// Last RC Oscillator Calibration Result
 #define CC2500_RCCTRL0_STATUS	0x3D	// Last RC Oscillator Calibration Result
 
-
+// command strobes
+#define CC2500_CMD_SRES		0x30	// Reset chip
+#define CC2500_CMD_SFSTXON	0x31	// Enable and calibrate frequency synthesizer
+#define CC2500_CMD_SXOFF	0x32	// Turn off crystal oscillator
+#define CC2500_CMD_SCAL		0x33	// Calibrate frequency synthesizer and turn it off
+#define CC2500_CMD_SRX		0x34	// Enable RX
+#define CC2500_CMD_STX		0x35	// Enable TX
+#define CC2500_CMD_SIDLE	0x36	// Exit Radio mode
+#define CC2500_CMD_SWOR		0x38	// Start automatic RX polling
+#define CC2500_CMD_SPWD		0x39	// Enter power down mode when CSn goes high.
+#define CC2500_CMD_SFRX		0x3A	// Flush the RX FIFO buffer.
+#define CC2500_CMD_SFTX		0x3B	// Flush the TX FIFO buffer.
+#define CC2500_CMD_SWORRST	0x3C	// Reset real time clock
+#define CC2500_CMD_SNOP		0x3D	// No operation. May be used to get access to the chip status byte.
