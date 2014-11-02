@@ -4,6 +4,8 @@
 #define CC2500_WRITE_BURST	0x40
 #define CC2500_READ_SINGLE	0x80
 #define CC2500_READ_BURST	0xC0
+#define CC2500_READ_STATUS	0xC0
+
 
 // configuration registers - keep content during sleep
 #define CC2500_IOCFG2		0x00	// GDO2 Output Pin Configuration
