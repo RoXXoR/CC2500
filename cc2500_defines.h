@@ -73,9 +73,12 @@
 #define CC2500_PKTSTATUS	0X38	// Current GDOx Status and Packet Status
 #define CC2500_VCO_VC_DAC	0x39	// Current Setting from PLL Calibration Module
 #define CC2500_TXBYTES		0x3A	// Underflow and Number of Bytes
-#define CC2500_RXBYTES		0x3B	// Underflow and Number of Bytes
+#define CC2500_RXBYTES		0x3B	// Overflow and Number of Bytes
 #define CC2500_RCCTRL1_STATUS	0x3C	// Last RC Oscillator Calibration Result
 #define CC2500_RCCTRL0_STATUS	0x3D	// Last RC Oscillator Calibration Result
+
+#define CC2500_NUM_TXBYTES	0x7F	// Mask for TXBYTES status register
+#define CC2500_NUM_RXBYTES	0x7F	// Mask for RXBYTES status register
 
 // command strobes
 #define CC2500_CMD_SRES		0x30	// Reset chip
