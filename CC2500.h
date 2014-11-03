@@ -22,8 +22,7 @@ public:
 	uint8_t getChipVersion(); 
 	uint8_t getStatusByte(); 
 	
-	void sendTxBuffer(uint8_t *txBuffer, uint8_t size);
-	int8_t receiveRxBuffer(uint8_t *rxBuffer, uint8_t size);
+
 
 
 //private:
@@ -36,6 +35,8 @@ public:
 	uint8_t readRegister(uint8_t addr);
 	void readRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size);
 	uint8_t readStatusRegister(uint8_t addr);
+	void sendTxBuffer(uint8_t *txBuffer, uint8_t size);
+	int8_t receiveRxBuffer(uint8_t *rxBuffer, uint8_t size);
 	void execStrobeCommand(uint8_t command);
 	void resetDevice();
 	void configureDeviceSettings();

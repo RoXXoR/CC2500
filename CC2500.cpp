@@ -123,8 +123,6 @@ void CC2500::configureDeviceSettings() {
 }
 
 void CC2500::sendTxBuffer(uint8_t *txBuffer, uint8_t size) {
-	uint8_t recv;
-
 	writeRegisterBurst(CC2500_TX_FIFO, txBuffer, size);
 	execStrobeCommand(CC2500_CMD_STX);
 	delay(200);
@@ -135,12 +133,14 @@ void CC2500::sendTxBuffer(uint8_t *txBuffer, uint8_t size) {
 
 int8_t CC2500::receiveRxBuffer(uint8_t *rxBuffer, uint8_t size) {
 	uint8_t pktLength;
+	uint8_t rxInfo[2];
 
 	if (readStatusRegister(CC2500_RXBYTES)&CC2500_NUM_RXBYTES) {
 		pktLength = readRegister(CC2500_RX_FIFO);
 		readRegisterBurst(CC2500_RX_FIFO, rxBuffer, pktLength);
+		readRegisterBurst(CC2500_RX_FIFO, rxInfo, sizeof(rxInfo));
 	} 
-	return pktLength;
+	return rxInfo[1];	// RSSI
 }
 
 uint8_t CC2500::getChipVersion() {
