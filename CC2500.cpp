@@ -32,10 +32,9 @@ void CC2500::begin() {
 	pinMode(SS,OUTPUT);
 
 	resetDevice();
-	delay(500);
+	delay(100);
 	configureDeviceSettings();
 	execStrobeCommand(CC2500_CMD_SRX);
-	delay(500);
 }
 
 void CC2500::writeRegister(uint8_t addr, uint8_t data) {
@@ -45,11 +44,10 @@ void CC2500::writeRegister(uint8_t addr, uint8_t data) {
 	digitalWrite(SS,HIGH);
 }
 
-void CC2500::writeRegisterBurst(uint8_t addr, uint8_t *data, uint8_t size) {
+void CC2500::writeRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size) {
 	digitalWrite(SS,LOW);
-	SPI.transfer(addr|CC2500_WRITE_BURST);
-	size++;
-	while (size > 1) {
+	SPI.transfer(saddr|CC2500_WRITE_BURST);
+	while (size > 0) {
 		SPI.transfer(*data++);
 		size--;
 	}
@@ -66,6 +64,16 @@ uint8_t CC2500::readRegister(uint8_t addr) {
 	return recv;
 }
 
+void CC2500::readRegisterBurst(uint8_t saddr, uint8_t *data, uint8_t size) {
+	digitalWrite(SS,LOW);
+	SPI.transfer(saddr|CC2500_READ_BURST);
+	while (size > 0) {
+		*data++ = SPI.transfer(0x00);
+		size--;
+	}
+	digitalWrite(SS,HIGH);
+}
+
 void CC2500::execStrobeCommand(uint8_t command) {
 	digitalWrite(SS,LOW);
 	SPI.transfer(command);
@@ -77,16 +85,6 @@ uint8_t CC2500::readStatusRegister(uint8_t addr) {
 }
 
 void CC2500::configureDeviceSettings() {
-// Crystal accuracy = 40 ppm
-// X-tal frequency = 26 MHz
-// RF output power = 0 dBm
-// RX filterbandwidth = 540.000000 kHz
-// Datarate = 250.000000 kbps
-// Manchester enable = (0) Manchester disabled
-// Optimization = Sensitivity
-// Format of RX/TX data = (0) Normal mode, use FIFOs for RX and TX
-// Forward Error Correction = (0) FEC disabled
-// FIFO autoflush = 0
 	uint8_t paTable[] = {0xFB};
 
 	writeRegister(CC2500_IOCFG0, 0x06);		// GDO0	= sync word
@@ -126,16 +124,24 @@ void CC2500::configureDeviceSettings() {
 
 void CC2500::sendTxBuffer(uint8_t *txBuffer, uint8_t size) {
 	uint8_t recv;
-	writeRegisterBurst(CC2500_TX_FIFO, txBuffer, size);
-	recv = readRegister(CC2500_TXBYTES|CC2500_READ_STATUS);
-	Serial.print("TX: ");
-	Serial.println(recv,HEX);
 
+	writeRegisterBurst(CC2500_TX_FIFO, txBuffer, size);
 	execStrobeCommand(CC2500_CMD_STX);
+	delay(200);
 	//while(digitalRead(_gdo0) == LOW);	// wait for the transfer to start
-	while(digitalRead(_gdo0) == HIGH);	// wait for the transfer to end
+	//while(digitalRead(_gdo0) == HIGH);	// wait for the transfer to end
+
 }
 
+int8_t CC2500::receiveRxBuffer(uint8_t *rxBuffer, uint8_t size) {
+	uint8_t pktLength;
+
+	if (readStatusRegister(CC2500_RXBYTES)&CC2500_NUM_RXBYTES) {
+		pktLength = readRegister(CC2500_RX_FIFO);
+		readRegisterBurst(CC2500_RX_FIFO, rxBuffer, pktLength);
+	} 
+	return pktLength;
+}
 
 uint8_t CC2500::getChipVersion() {
 	return readStatusRegister(CC2500_REG_VERSION);
@@ -145,7 +151,7 @@ uint8_t CC2500::getStatusByte() {
 	uint8_t recv;
 	
 	digitalWrite(SS,LOW);
-	recv = SPI.transfer(CC2500_CMD_SNOP);
+	recv = SPI.transfer(CC2500_CMD_SNOP|CC2500_READ_SINGLE);
 	digitalWrite(SS,HIGH);
 	return recv;
 }
