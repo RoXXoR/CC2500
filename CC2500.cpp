@@ -137,7 +137,17 @@ int8_t CC2500::receiveRxBuffer(uint8_t *rxBuffer, uint8_t size) {
 
 	if (readStatusRegister(CC2500_RXBYTES)&CC2500_NUM_RXBYTES) {
 		pktLength = readRegister(CC2500_RX_FIFO);
-		readRegisterBurst(CC2500_RX_FIFO, rxBuffer, pktLength);
+		if (pktLength <= size) {
+			readRegisterBurst(CC2500_RX_FIFO, rxBuffer, pktLength);
+		} else {
+			readRegisterBurst(CC2500_RX_FIFO, rxBuffer, size);
+			pktLength -= size;
+			while (pktLength > 0) {
+				readRegister(CC2500_RX_FIFO);	// dummy read to empty the FIFO
+				pktLength--;
+			}
+
+		}
 		readRegisterBurst(CC2500_RX_FIFO, rxInfo, sizeof(rxInfo));
 	} 
 	return rxInfo[1];	// RSSI
