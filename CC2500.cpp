@@ -157,6 +157,9 @@ uint8_t CC2500::getChipVersion() {
 	return readStatusRegister(CC2500_REG_VERSION);
 }
 
+/*
+ get status byte (including rx fifo fill) by execuring a read from the NOP command strobe register
+*/
 uint8_t CC2500::getStatusByte() {
 	uint8_t recv;
 	
